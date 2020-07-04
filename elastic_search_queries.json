@@ -1,0 +1,87 @@
+#curl -H "Content-Type: application/json" -XPOST "http://localhost:9200/product/default/_bulk?pretty" --data-binary "@product.json" (importing data)
+
+#add document
+POST /product/default
+{
+  "name": "Processing event with elastic search",
+  "instructor": {
+    "firstName": "Bo",
+    "lastName": "Andersen"
+  },
+  "category": "book"
+}
+
+POST /product/default/101
+{
+  "name": "complete guide to elastic search",
+  "instructor": {
+    "firstName": "Bo",
+    "lastName": "Andersen"
+  }
+}
+
+#search document by id
+GET /product/default/100
+
+GET /product/
+
+#replacing document
+PUT /product/default/1
+{
+  "name": "complete guide to elastic search",
+  "instructor": {
+    "firstName": "Bo",
+    "lastName": "Andersen"
+  },
+  "price": 200
+}
+
+#updating document
+POST /product/default/1/_update
+{
+  "doc": {
+    "price": 95, "tags": ["elastic search"]
+  }
+}
+
+#scripted update
+POST /product/default/1/_update
+{
+  "script" : "ctx._source.price += 10"
+}
+
+#upsert(jika nilai sudah ada maka update, jika nilai belum ada maka buat)
+POST /product/default/1/_update
+{
+  "script" : "ctx._source.price += 10",
+  "upsert": {
+    "price": 100
+  }
+}
+
+#deleting documents
+DELETE /product/default/1
+#delete many document
+POST /product/_delete_by_query
+{
+  "query": {
+    "match": {
+      "category": "book"
+    }
+  }
+}
+
+#delete indeces
+DELETE /product
+
+#batch processing (run many queries at once)
+POST /product/default/_bulk
+{"index": {"_id": 100}}
+{"price": 100}
+{"index": {"_id": 101}}
+{"price": 101}
+
+POST /product/default/_bulk
+{"update": {"_id": "100"}}
+{"doc": {"price": 1000}}
+{"delete": {"_id": 101}}
